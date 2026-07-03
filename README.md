@@ -104,7 +104,7 @@ The Angular frontend automatically includes these credentials via an HTTP interc
 
 The following Entity-Relationship Diagram illustrates the database schema and the relationships between tables:
 
-![ERD Diagram](docs/erd.png)
+![ERD Diagram](docs/ERDdesign.drawio.png)
 
 **Key Relationships:**
 - **ISOs → Spools:** One-to-Many (An ISO contains multiple spools)

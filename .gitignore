@@ -18,3 +18,7 @@ Thumbs.db
 
 # Gemini
 .gemini/
+
+# Excluded files
+SWAGGER_PRESENTATION.md
+Fabrication_Planner_API.postman_collection.json
