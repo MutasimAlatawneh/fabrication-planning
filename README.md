@@ -100,6 +100,18 @@ The Angular frontend automatically includes these credentials via an HTTP interc
 | GET | `/api/v1/batches/{id}` | Get batch detail with spools |
 | GET | `/api/v1/dashboard/metrics` | Get dashboard aggregate metrics |
 
+## Database Design (ERD)
+
+The following Entity-Relationship Diagram illustrates the database schema and the relationships between tables:
+
+![ERD Diagram](docs/erd.png)
+
+**Key Relationships:**
+- **ISOs → Spools:** One-to-Many (An ISO contains multiple spools)
+- **Spools → Spool Materials:** One-to-Many (A spool requires multiple materials)
+- **Material Stock → Spool Materials:** One-to-Many (A material can be required by many spools)
+- **Batches → Batch Spools → Spools:** Many-to-Many (A batch contains multiple spools; resolved via junction table)
+
 ## Architecture
 
 ### Backend (Layered Architecture)
