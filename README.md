@@ -5,7 +5,7 @@ A full-stack web application that simulates a fabrication planning workflow wher
 ## Tech Stack
 
 - **Frontend:** Angular 21, Bootstrap 5, Chart.js
-- **Backend:** Spring Boot 4.1, Spring Security, Spring Data JPA, Hibernate 7
+- **Backend:** Spring Boot 3.3.1, Spring Security, Spring Data JPA, Hibernate 6
 - **Database:** PostgreSQL 16
 - **Build Tools:** Maven (backend), npm (frontend)
 
@@ -134,7 +134,7 @@ com.fabricationplanner.backend
 ```
 src/app/
 ├── components/
-│   ├── dashboard/      # Metrics cards + Chart.js doughnut chart
+│   ├── dashboard/      # Metrics cards + Chart.js charts (doughnut + bar)
 │   ├── material-list/  # CRUD table with search
 │   ├── iso-list/       # CRUD table with navigation to detail
 │   ├── iso-detail/     # Master-detail: spool + material management
