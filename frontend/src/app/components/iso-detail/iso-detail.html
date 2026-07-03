@@ -1,0 +1,157 @@
+<div class="container mt-4" *ngIf="iso">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-secondary btn-sm me-3 d-inline-flex align-items-center gap-1" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+        </svg>
+        Back to ISOs
+      </button>
+      <h2 class="d-inline text-secondary">{{ iso.isoNo }}</h2>
+      <span class="badge bg-info ms-2">{{ iso.revision }}</span>
+      <span class="badge ms-1" [ngClass]="{
+        'bg-success': iso.status === 'RELEASED',
+        'bg-warning text-dark': iso.status === 'IN_PROGRESS',
+        'bg-secondary': iso.status === 'COMPLETED'
+      }">{{ iso.status }}</span>
+    </div>
+    <button class="btn btn-primary" (click)="openSpoolForm()">+ Add Spool</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="deleteErrorMessage" class="alert alert-danger alert-dismissible fade show mb-4">
+    {{ deleteErrorMessage }}
+    <button type="button" class="btn-close" (click)="deleteErrorMessage = ''"></button>
+  </div>
+
+  <!-- Add Spool Form -->
+  <div *ngIf="showSpoolForm" class="card mb-4 shadow-sm border-primary">
+    <div class="card-header bg-primary text-white">Add New Spool</div>
+    <div class="card-body">
+      <div *ngIf="spoolError" class="alert alert-danger">{{ spoolError }}</div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Spool Number</label>
+          <input type="text" class="form-control" [(ngModel)]="spoolFormData.spoolNo" placeholder="e.g. SPL-003">
+        </div>
+        <div class="col-md-6 d-flex align-items-end gap-2">
+          <button class="btn btn-success" (click)="addSpool()">Save</button>
+          <button class="btn btn-outline-secondary" (click)="cancelSpoolForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spools Table -->
+  <div *ngIf="iso.spools && iso.spools.length > 0; else noSpools">
+    <div *ngFor="let spool of iso.spools" class="card mb-3 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center bg-white">
+        <div>
+          <strong>{{ spool.spoolNo }}</strong>
+          <span class="badge ms-2" [ngClass]="getStatusClass(spool.status)">{{ spool.status }}</span>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-info me-1" (click)="toggleMaterials(spool.id)">
+            {{ expandedSpoolId === spool.id ? '▲ Hide Materials' : '▼ Manage Materials' }}
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(spool)">🗑️</button>
+        </div>
+      </div>
+
+      <!-- Expanded Material Section -->
+      <div *ngIf="expandedSpoolId === spool.id" class="card-body">
+        <!-- Required Materials Table -->
+        <table class="table table-sm table-bordered mb-3" *ngIf="spool.requiredMaterials && spool.requiredMaterials.length > 0">
+          <thead class="table-light">
+            <tr>
+              <th>Material Code</th>
+              <th>Description</th>
+              <th>Required Qty</th>
+              <th>Available Stock</th>
+              <th>Status</th>
+              <th style="width: 80px;">Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sm of spool.requiredMaterials">
+              <td><span class="badge bg-secondary">{{ sm.materialCode }}</span></td>
+              <td>{{ sm.materialDescription }}</td>
+              <td>{{ sm.qtyRequired }}</td>
+              <td [ngClass]="{'text-danger fw-bold': sm.availableQuantity < sm.qtyRequired}">
+                {{ sm.availableQuantity }}
+              </td>
+              <td>
+                <span class="badge" [ngClass]="sm.availableQuantity >= sm.qtyRequired ? 'bg-success' : 'bg-danger'">
+                  {{ sm.availableQuantity >= sm.qtyRequired ? '✓ OK' : '✗ Short' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-danger" (click)="removeMaterial(sm.id)">✗</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="!spool.requiredMaterials || spool.requiredMaterials.length === 0"
+             class="text-muted text-center py-2 mb-3">
+          No materials assigned yet.
+        </div>
+
+        <!-- Add Material Form -->
+        <div class="bg-light p-3 rounded">
+          <h6 class="mb-2">Add Material Requirement</h6>
+          <div *ngIf="materialError" class="alert alert-danger py-1 small">{{ materialError }}</div>
+          <div class="row g-2">
+            <div class="col-md-5">
+              <select class="form-select form-select-sm" [(ngModel)]="materialFormData.materialId">
+                <option [value]="0" disabled>Select material...</option>
+                <option *ngFor="let m of allMaterials" [value]="m.id">
+                  {{ m.code }} — {{ m.description }} (Stock: {{ m.quantity }})
+                </option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <input type="number" class="form-control form-control-sm" [(ngModel)]="materialFormData.qtyRequired"
+                     placeholder="Qty required" min="0.01" step="0.01">
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-sm btn-success" (click)="addMaterialToSpool(spool.id)">+ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noSpools>
+    <div class="card shadow-sm">
+      <div class="card-body text-center text-muted py-5">
+        <h5>No spools defined for this ISO yet.</h5>
+        <p>Click "Add Spool" to create the first spool for this ISO drawing.</p>
+      </div>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-backdrop-custom" *ngIf="showDeleteModal" (click)="cancelDelete()"></div>
+<div class="modal d-block" tabindex="-1" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">⚠️ Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDelete()"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fs-5 mb-1">Delete this spool and all its material requirements?</p>
+        <p class="fw-bold fs-4 text-danger">{{ deleteTargetNo }}</p>
+        <p class="text-muted small mb-0">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger px-4" (click)="proceedDelete()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

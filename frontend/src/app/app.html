@@ -1,0 +1,5 @@
+<!-- Hide the navbar on the login page -->
+<app-navbar *ngIf="!isLoginPage"></app-navbar>
+
+<!-- Angular dynamically injects the Dashboard or Material List here based on the URL -->
+<router-outlet></router-outlet>

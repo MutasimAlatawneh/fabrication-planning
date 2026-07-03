@@ -1,0 +1,122 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary mb-0">📐 ISO Drawings</h2>
+    <button class="btn btn-primary" (click)="openAddForm()">+ Add ISO</button>
+  </div>
+
+  <!-- Search -->
+  <div class="input-group mb-3" style="max-width: 400px;">
+    <input type="text" class="form-control" placeholder="Search by ISO number..."
+           [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+    <button class="btn btn-outline-secondary" (click)="onSearch()">🔍</button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mb-4">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Add/Edit Form -->
+  <div *ngIf="showForm" class="card mb-4 shadow-sm border-primary">
+    <div class="card-header bg-primary text-white">
+      {{ editingId ? 'Edit ISO' : 'Add New ISO' }}
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">ISO Number</label>
+          <input type="text" class="form-control" [(ngModel)]="formData.isoNo" placeholder="e.g. ISO-2026-A01">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Revision</label>
+          <input type="text" class="form-control" [(ngModel)]="formData.revision" placeholder="e.g. Rev 0">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" [(ngModel)]="formData.status">
+            <option value="RELEASED">RELEASED</option>
+            <option value="IN_PROGRESS">IN PROGRESS</option>
+            <option value="COMPLETED">COMPLETED</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end gap-2">
+          <button class="btn btn-success" (click)="saveIso()">Save</button>
+          <button class="btn btn-outline-secondary" (click)="cancelForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-striped table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>ISO Number</th>
+            <th>Revision</th>
+            <th>Status</th>
+            <th style="width: 200px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let iso of isos" style="cursor: pointer;" (click)="viewDetail(iso.id)">
+            <td>{{ iso.id }}</td>
+            <td><span class="badge bg-primary">{{ iso.isoNo }}</span></td>
+            <td>{{ iso.revision }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'bg-success': iso.status === 'RELEASED',
+                'bg-warning text-dark': iso.status === 'IN_PROGRESS',
+                'bg-secondary': iso.status === 'COMPLETED'
+              }">{{ iso.status }}</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-info me-1" (click)="viewDetail(iso.id); $event.stopPropagation()">👁️ View</button>
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="openEditForm(iso); $event.stopPropagation()">✏️</button>
+              <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(iso); $event.stopPropagation()">🗑️</button>
+            </td>
+          </tr>
+          <tr *ngIf="isos.length === 0">
+            <td colspan="5" class="text-center text-muted py-4">No ISOs found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-footer d-flex justify-content-between align-items-center bg-white">
+      <span class="text-muted small">
+        Page {{ currentPage + 1 }} of {{ totalPages === 0 ? 1 : totalPages }}
+        ({{ totalElements }} total)
+      </span>
+      <div>
+        <button class="btn btn-outline-primary btn-sm me-2" (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+        <button class="btn btn-outline-primary btn-sm" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-backdrop-custom" *ngIf="showDeleteModal" (click)="cancelDelete()"></div>
+<div class="modal d-block" tabindex="-1" *ngIf="showDeleteModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">⚠️ Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDelete()"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fs-5 mb-1">Delete this ISO and ALL its spools?</p>
+        <p class="fw-bold fs-4 text-danger">{{ deleteTargetNo }}</p>
+        <p class="text-muted small mb-0">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger px-4" (click)="proceedDelete()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

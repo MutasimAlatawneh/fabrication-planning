@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <h2 class="mb-4 text-secondary">📊 Fabrication Overview</h2>
+
+  <!-- Top Row: Stat Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4 col-sm-6 mb-3">
+      <div class="card text-white bg-primary shadow-sm h-100">
+        <div class="card-body text-center">
+          <h6 class="card-title text-uppercase small">Total ISOs</h6>
+          <h2 class="display-5 fw-bold">{{ metrics.totalIsos }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-6 mb-3">
+      <div class="card text-white bg-info shadow-sm h-100">
+        <div class="card-body text-center">
+          <h6 class="card-title text-uppercase small">Available Materials</h6>
+          <h2 class="display-5 fw-bold">{{ metrics.availableMaterials }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-6 mb-3">
+      <div class="card text-white bg-dark shadow-sm h-100">
+        <div class="card-body text-center">
+          <h6 class="card-title text-uppercase small">Total Spools</h6>
+          <h2 class="display-5 fw-bold">{{ metrics.totalSpools }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Chart & Actionable Stats -->
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white fw-bold">Spool Batching Status</div>
+        <div class="card-body" style="position: relative; height:300px;">
+          <canvas id="fabricationChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <div class="row h-100">
+        <div class="col-12 mb-3">
+          <div class="card text-white bg-success shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h6 class="card-title text-uppercase small">Generated Batches</h6>
+              <h2 class="display-4 fw-bold">{{ metrics.generatedBatches }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card text-white bg-secondary shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h6 class="card-title text-uppercase small">Batched Spools</h6>
+              <h2 class="display-5 fw-bold">{{ metrics.batchedSpools }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card text-dark bg-warning shadow-sm h-100">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h6 class="card-title text-uppercase small">Pending Spools</h6>
+              <h2 class="display-5 fw-bold">{{ metrics.pendingSpools }}</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Material Inventory Chart -->
+  <div class="row mt-4 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white fw-bold">📦 Material Inventory Levels</div>
+        <div class="card-body" style="position: relative; height:350px;">
+          <canvas id="materialChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
